@@ -4,24 +4,72 @@ on:
       - main
 
 jobs:
-  # BUILD JOB
-  build:
-    runs-on: ubuntu-latest
 
+  # SETUP JOB
+  setup:
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.38.5'
         channel: 'stable'
+        cache: true
     - name: Install dependencies
       run: flutter pub get
+    - name: Upload workspace
+      uses: actions/upload-artifact@v3
+      with:
+        name: workspace
+        path: .
+        retention-days: 1
+
+  # TEST JOB
+  test:
+    runs-on: ubuntu-latest
+    needs: setup
+
+    steps:
+    - name: Download workspace
+      uses: actions/download-artifact@v3
+      with:
+        name: workspace
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.38.5'
+        channel: 'stable'
+        cache: true
     - name: Run Tests
       run: flutter test
+
+  # BUILD JOB
+  build:
+    runs-on: ubuntu-latest
+    needs: test 
+
+    steps:
+    - name: Download workspace
+      uses: actions/download-artifact@v3
+      with:
+        name: workspace
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.38.5'
+        channel: 'stable'
+        cache: true
     - name: Build APK
       run: flutter build apk --release
+    
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: android-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
+        retention-days: 7
   
     # - name: Decode Keystore File
     #   run: echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > android/app/keystore.jks
@@ -47,6 +95,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Download APK artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: android-apk
+        path: build/app/outputs/flutter-apk/
     - name: Deploy to Google Play
       uses: r0adkll/upload-google-play@v1
       with:
