@@ -1,121 +1,305 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'dart:developer' as dev;
+import 'stegano.dart';
+
+import 'final_view.dart';
+import 'image_select.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const Obscurus());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class Obscurus extends StatelessWidget {
+  const Obscurus({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+      title: 'Obscurus',
+      home: Builder(
+        builder: (context) => Scaffold(
+          body: Padding(
+            padding: const EdgeInsets.all(30.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 8,
+                  ),
+                  child: Column(
+                    children: [
+                      //Logo
+                      Center(
+                        heightFactor: 1.1,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.asset('assets/images/logo.jpg'),
+                        ),
+                      ),
+
+                      //Title
+                      Center(
+                        child: const Text(
+                          'Obscurus',
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+
+                      //Subtitle
+                      Center(child: const Text('Steganography made easy')),
+                    ],
+                  ),
+                ),
+
+                //Action buttons
+                Expanded(
+                  child: Row(
+                    spacing: 16,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(
+                              Colors.blue,
+                            ),
+                            foregroundColor: WidgetStateProperty.all(
+                              Colors.white,
+                            ),
+                            padding: WidgetStateProperty.all(
+                              const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            shape: WidgetStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                          onPressed: () async {
+                            // Handle button press
+                            String? image = await FileSelect.selectImage();
+                            dev.log('Image selected: $image');
+
+                            if (image != null && context.mounted) {
+                              dev.log(
+                                'Navigating to EncodingWidget with image: $image',
+                              );
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      EncodingWidget(imagePath: image),
+                                ),
+                              );
+                            }
+                          },
+                          child: const Text(
+                            'Encode',
+                            textScaler: TextScaler.linear(3.0),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(
+                              const Color.fromARGB(255, 179, 100, 10),
+                            ),
+                            foregroundColor: WidgetStateProperty.all(
+                              Colors.white,
+                            ),
+                            padding: WidgetStateProperty.all(
+                              const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            shape: WidgetStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                          onPressed: () async {
+                            // Handle button press
+                            String? image = await FileSelect.selectImage();
+                            dev.log('Image selected: $image');
+
+                            if (image != null && context.mounted) {
+                              dev.log(
+                                'Navigating to DecodingWidget with image: $image',
+                              );
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DecodingWidget(imagePath: image),
+                                ),
+                              );
+                            }
+                          },
+                          child: const Text(
+                            'Decode',
+                            textScaler: TextScaler.linear(3.0),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class EncodingWidget extends StatelessWidget {
+  const EncodingWidget({super.key, required this.imagePath});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  final String imagePath;
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    String message = '';
+
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      appBar: AppBar(title: const Text('Encoding')),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
           children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            Container(
+              height: MediaQuery.of(context).size.height / 2.5,
+              padding: const EdgeInsets.all(8.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16.0),
+                child: Image.file(File(imagePath), fit: BoxFit.cover),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              onSubmitted: (value) => message = value,
+              onChanged: (value) => message = value,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Enter message to encode',
+              ),
+              minLines: 3,
+              maxLines: null,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                dev.log('Message submitted "$message"');
+                //Get image name from path
+                String filename = imagePath.split('/').last;
+
+
+                // Loading animation will go here, for now just go to saving view @TODO
+                Stegano.encode(message, imagePath).then((file) {
+                  if (file != null) {
+                    dev.log('Image encoded successfully: ${file.path}');
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => SavingView(file: file, filename: filename),
+                      ),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Image encoded successfully!'),
+                      ),
+                    );
+                  } else {
+                    dev.log('Failed to encode image');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Failed to encode image.')),
+                    );
+                  }
+                });
+              },
+              child: const Text('Encode'),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+    );
+  }
+}
+
+class DecodingWidget extends StatelessWidget {
+  const DecodingWidget({super.key, required this.imagePath});
+
+  final String imagePath;
+  @override
+  Widget build(BuildContext context) {
+    String message = '';
+
+    final File file = File(imagePath);
+    return Scaffold(
+      appBar: AppBar(title: const Text('Decoding')),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height / 2.5,
+              padding: const EdgeInsets.all(8.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16.0),
+                child: Image.file(file, fit: BoxFit.cover),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // @TODO Secret for decoding
+            // TextField(
+            //   onSubmitted: (value) => message = value,
+            //   onChanged: (value) => message = value,
+            //   decoration: const InputDecoration(
+            //     border: OutlineInputBorder(),
+            //     labelText: 'Enter secret to decode',
+            //   ),
+            //   minLines: 3,
+            //   maxLines: null,
+            // ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              child: const Text('Decode'),
+              onPressed: () {
+                dev.log('Message submitted "$message"');
+                //Get image name from path
+                String filename = imagePath.split('/').last;
+
+
+                // Loading animation will go here, for now just go to saving view @TODO
+                Stegano.decode(imagePath).then((message) {
+                  if (message != null) {
+                    dev.log('Image decoded successfully: $message');
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => DecodedView(file : file, message: message, filename: filename),
+                      ),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Image decoded successfully!'),
+                      ),
+                    );
+                  } else {
+                    dev.log('Failed to decode image');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Failed to decode image.')),
+                    );
+                  }
+                });
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
