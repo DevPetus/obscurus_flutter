@@ -5,6 +5,7 @@ on:
       - develop
     paths:
     - 'frontend/**'
+    - '.github/workflows/build-deploy.yml'
 
 defaults:
   run:
@@ -21,11 +22,6 @@ jobs:
           sparse-checkout: |
             frontend
           sparse-checkout-cone-mode: true
-      - name: Debug working dir
-        run: |
-          pwd
-          ls -la
-          ls -la frontend || true
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
