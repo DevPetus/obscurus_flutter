@@ -99,4 +99,4 @@ app.*.map.json
 /android/app/release
 
 # Assets file
-/assets/
+frontend/assets/

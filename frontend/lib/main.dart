@@ -36,7 +36,7 @@ class Obscurus extends StatelessWidget {
                         heightFactor: 1.1,
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(16),
-                          child: Image.asset('assets/images/logo.jpg'),
+                          child: Image.asset('assets/images/logo.gif'),
                         ),
                       ),
 
@@ -125,6 +125,7 @@ class Obscurus extends StatelessWidget {
                           ),
                           onPressed: () async {
                             // Handle button press
+                            // Select an image for decoding
                             String? image = await FileSelect.selectImage();
                             dev.log('Image selected: $image');
 
@@ -270,7 +271,6 @@ class DecodingWidget extends StatelessWidget {
             ElevatedButton(
               child: const Text('Decode'),
               onPressed: () {
-                dev.log('Message submitted "$message"');
                 //Get image name from path
                 String filename = imagePath.split('/').last;
 

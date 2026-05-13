@@ -35,6 +35,15 @@ class  SavingView extends StatelessWidget {
                 if (filepath == null) {
                     dev.log('Saving cancelled');
                     return;    
+                } else {
+                    dev.log('Image saved at path: $filepath');
+
+                    // Remove the temporary file
+                    if (file.existsSync()) {
+                        file.deleteSync();  
+                        }
+                    dev.log('Temporary file removed');
+
                 }
                 dev.log('Saving image at path: $filepath');
                 // Navigator.of(context).push(

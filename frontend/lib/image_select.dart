@@ -20,9 +20,13 @@ class FileSelect {
   //Select a save location for the encoded image 
   static Future<String?> selectSaveLocation(File file, String imageName) async {
     final typeGroup = XTypeGroup(label: 'images', extensions: ['png']);
-    const String fileName = 'suggested_name.jpg';
+    //Remove extension from image name if it exists and add .png extension
+    if (imageName.contains('.')) {
+      imageName = imageName.split('.').first;
+    }
+    String fileName = '$imageName.png';
     final FileSaveLocation? result = await getSaveLocation(
-      suggestedName: imageName,
+      suggestedName: fileName,
     );
     if (result == null) {
       // Operation was canceled by the user.

@@ -7,7 +7,7 @@ class Stegano {
     return await Steganograph.cloak(
       image: File(imagePath),
       message: message,
-      outputFilePath: 'result.png'
+      outputFilePath: 'tmp_result.png'
     );
   }
   // @TODO recompress the image to reduce file size, currently the output is a png
